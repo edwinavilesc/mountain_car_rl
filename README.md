@@ -1,5 +1,12 @@
 ![CI](https://github.com/emiliomunozai/mountain_car/actions/workflows/ci.yml/badge.svg?branch=main)
 
+
+# Mountain Car - Reinforcement Learning
+Repositorio utilizado como parte de los ejercicios de la asignatura
+Simulación y Aprendizaje por Refuerzo.
+Maestría en Inteligencia Artificial.
+Edwin Avilés
+
 A hands-on repo for understanding how Reinforcement Learning works.
 Train, inspect, and visualise RL agents on [MountainCar-v0](https://gymnasium.farama.org/environments/classic_control/mountain_car/) (or any other Gymnasium environment).
 
