@@ -187,6 +187,215 @@ def cmd_render(args: argparse.Namespace) -> None:
     env.close()
 
 
+def _plot_comparison(
+    agent_ql,
+    agent_dqn,
+    output_dir: Path,
+    *,
+    show: bool = True,
+) -> None:
+    """Genero la gráfica comparativa Q-Learning vs DQN ~ usada internamente por cmd_plot."""
+    import matplotlib.pyplot as plt          # type: ignore[import]
+    import matplotlib.ticker as ticker       # type: ignore[import]
+
+    # ── Ventanas de media móvil ~ ajustadas al tamaño del historial de cada agente
+    w_ql  = min(200, max(1, len(agent_ql.rewards_history)  // 10))
+    w_dqn = min(50,  max(1, len(agent_dqn.rewards_history) // 10))
+
+    hist_ql  = np.array(agent_ql.rewards_history)
+    hist_dqn = np.array(agent_dqn.rewards_history)
+
+    smooth_ql  = np.convolve(hist_ql,  np.ones(w_ql)  / w_ql,  mode="valid")
+    smooth_dqn = np.convolve(hist_dqn, np.ones(w_dqn) / w_dqn, mode="valid")
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    fig.patch.set_facecolor("#0d1117")
+
+    configs = [
+        (axes[0], hist_ql,  smooth_ql,  w_ql,  "Q-Learning", "#f0883e"),
+        (axes[1], hist_dqn, smooth_dqn, w_dqn, "DQN",        "#58a6ff"),
+    ]
+
+    for ax, hist, smooth, window, name, color in configs:
+        ax.set_facecolor("#161b22")
+        eps        = np.arange(1, len(hist) + 1)
+        smooth_eps = eps[window - 1:]
+        best       = float(np.max(hist))
+        final_avg  = float(np.mean(hist[-min(100, len(hist)):]))
+
+        # ── Curva raw ~ "datos brutos por episodio"
+        ax.plot(eps, hist, color=color, alpha=0.2, linewidth=0.6)
+        # ── Curva suavizada ~ media móvil
+        ax.plot(smooth_eps, smooth, color=color, linewidth=2.5,
+                label=f"Media móvil ({window} eps)")
+        # ── Umbral "resuelto" y peor caso
+        ax.axhline(-110, color="#f85149", linestyle="--", linewidth=1.5,
+                   alpha=0.8, label='Umbral "resuelto" (~-110)')
+        ax.axhline(-200, color="#8b949e", linestyle=":",  linewidth=1.0, alpha=0.5)
+
+        ax.set_title(
+            f"{name} ~ {len(hist):,} episodios\n"
+            f"Mejor: {best:.1f} | Promedio final: {final_avg:.1f}",
+            color="#e6edf3", fontsize=13,
+        )
+        ax.set_xlabel("Episodio",        color="#8b949e", fontsize=11)
+        ax.set_ylabel("Recompensa Total", color="#8b949e", fontsize=11)
+        ax.tick_params(colors="#8b949e")
+        ax.xaxis.set_major_formatter(
+            ticker.FuncFormatter(lambda x, _: f"{int(x):,}")
+        )
+        for spine in ax.spines.values():
+            spine.set_edgecolor("#30363d")
+        ax.grid(True, color="#21262d", linewidth=0.8, alpha=0.8)
+        ax.legend(
+            facecolor="#161b22", edgecolor="#30363d",
+            labelcolor="#e6edf3", fontsize=10,
+        )
+
+    fig.suptitle(
+        "Comparación ~ Q-Learning vs DQN en MountainCar-v0",
+        color="#e6edf3", fontsize=15, y=1.02,
+    )
+    plt.tight_layout()
+
+    comp_path = output_dir / "comparison_ql_vs_dqn.png"
+    fig.savefig(
+        comp_path, dpi=150, bbox_inches="tight",
+        facecolor=fig.get_facecolor(),
+    )
+    print(f"  Gráfica comparativa guardada en {comp_path}")
+    if show:
+        plt.show()
+    plt.close(fig)
+
+
+def cmd_plot(args: argparse.Namespace) -> None:
+    """Genero las curvas de aprendizaje del agente y las guardo como PNG.
+
+    Produce:
+      ~ <agent>_learning_curve.png       ~ curva individual del agente
+      ~ comparison_ql_vs_dqn.png         ~ comparativa (si ambos agentes están entrenados)
+
+    Los archivos se guardan en docs/03_resultados/plots/.
+    """
+    try:
+        import matplotlib.pyplot as plt      # type: ignore[import]
+        import matplotlib.ticker as ticker   # type: ignore[import]
+    except ImportError:
+        print("matplotlib no está instalado. Ejecuta: uv sync")
+        return
+
+    # ── Cargo el agente solicitado
+    agent = _load(args.agent)
+    if agent is None:
+        return
+
+    if not agent.rewards_history:
+        print(
+            f"No hay historial de recompensas para '{args.agent}'.\n"
+            f"Entrena primero con: uv run mountaincar train {args.agent}"
+        )
+        return
+
+    history = np.array(agent.rewards_history)
+    episodes = np.arange(1, len(history) + 1)
+
+    # ── Ventana de media móvil ~ ajusto al tamaño del historial para evitar window > len
+    window = min(args.window, max(1, len(history) // 5))
+    kernel   = np.ones(window) / window
+    smoothed = np.convolve(history, kernel, mode="valid")
+    smoothed_eps = episodes[window - 1:]
+
+    # ── Estadísticas clave
+    best_reward  = float(np.max(history))
+    best_episode = int(np.argmax(history)) + 1
+    final_avg    = float(np.mean(history[-min(100, len(history)):]))
+
+    # ── Figura con estilo oscuro profesional
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_facecolor("#0d1117")
+    ax.set_facecolor("#161b22")
+
+    # ── Curva raw ~ datos brutos por episodio (semitransparente)
+    ax.plot(
+        episodes, history,
+        color="#58a6ff", alpha=0.25, linewidth=0.8,
+        label="Recompensa por episodio",
+    )
+    # ── Curva suavizada ~ media móvil
+    ax.plot(
+        smoothed_eps, smoothed,
+        color="#58a6ff", linewidth=2.5,
+        label=f"Media móvil ({window} eps)",
+    )
+    # ── Umbral "resuelto" ~ referencia de la literatura RL
+    ax.axhline(
+        -110, color="#f85149", linestyle="--", linewidth=1.5, alpha=0.8,
+        label='Umbral "resuelto" (~-110)',
+    )
+    # ── Peor caso ~ episodio de 200 pasos sin llegar a la bandera
+    ax.axhline(
+        -200, color="#8b949e", linestyle=":", linewidth=1.0, alpha=0.6,
+        label="Peor caso (-200)",
+    )
+    # ── Marcador del mejor resultado obtenido
+    ax.axvline(best_episode, color="#3fb950", linestyle="--", linewidth=1.2, alpha=0.7)
+    ax.scatter(
+        [best_episode], [best_reward],
+        color="#3fb950", s=80, zorder=5,
+        label=f"Mejor: {best_reward:.1f} (ep. {best_episode:,})",
+    )
+
+    # ── Estilo ~ títulos y ejes
+    agent_name = args.agent.upper()
+    ax.set_title(
+        f"Curva de Aprendizaje ~ {agent_name} en MountainCar-v0\n"
+        f"Total episodios: {len(history):,} | "
+        f"Promedio final (últimos 100): {final_avg:.1f}",
+        color="#e6edf3", fontsize=14, pad=15,
+    )
+    ax.set_xlabel("Episodio",         color="#8b949e", fontsize=12)
+    ax.set_ylabel("Recompensa Total", color="#8b949e", fontsize=12)
+    ax.tick_params(colors="#8b949e")
+    ax.xaxis.set_major_formatter(
+        ticker.FuncFormatter(lambda x, _: f"{int(x):,}")
+    )
+    for spine in ax.spines.values():
+        spine.set_edgecolor("#30363d")
+    ax.grid(True, color="#21262d", linewidth=0.8, alpha=0.8)
+    ax.legend(
+        facecolor="#161b22", edgecolor="#30363d",
+        labelcolor="#e6edf3", fontsize=10,
+    )
+    plt.tight_layout()
+
+    # ── Guardo en docs/03_resultados/plots/
+    output_dir = Path("docs") / "03_resultados" / "plots"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{args.agent}_learning_curve.png"
+    fig.savefig(
+        output_path, dpi=150, bbox_inches="tight",
+        facecolor=fig.get_facecolor(),
+    )
+    print(f"Gráfica guardada en {output_path}")
+
+    show = not args.no_show
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    # ── Si el otro agente también tiene historial, genero la comparativa automáticamente
+    other_name = "dqn" if args.agent == "qlearning" else "qlearning"
+    other_cls, other_path = _resolve(other_name)
+    if other_path.exists():
+        other_agent = other_cls.load(other_path)
+        if other_agent.rewards_history:
+            print(f"Detecté historial de '{other_name}' ~ generando gráfica comparativa...")
+            agent_ql  = agent       if args.agent == "qlearning" else other_agent
+            agent_dqn = other_agent if args.agent == "qlearning" else agent
+            _plot_comparison(agent_ql, agent_dqn, output_dir, show=show)
+
+
 def cmd_version(_args: argparse.Namespace) -> None:
     print(f"mountain_car {VERSION}")
 
@@ -240,6 +449,17 @@ def _build_parser() -> argparse.ArgumentParser:
 
     p = add_agent(add("render", "Render episodes using a saved agent (graphical window)", cmd_render))
     p.add_argument("--episodes", type=int, default=1, help="Episodes to render (default: 1)")
+
+    # ── Comando plot ~ genera curvas de aprendizaje y las guarda como PNG
+    p = add_agent(add("plot", "Genera curvas de aprendizaje del agente entrenado", cmd_plot))
+    p.add_argument(
+        "--window", type=int, default=100,
+        help="Ventana de media móvil ~ 'moving average window' (default: 100)",
+    )
+    p.add_argument(
+        "--no-show", action="store_true",
+        help="Solo guarda la gráfica sin mostrarla en pantalla",
+    )
 
     return parser
 
