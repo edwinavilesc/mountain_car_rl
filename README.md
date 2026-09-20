@@ -8,10 +8,8 @@
 
 > **Taller 1 ~ Aprendizaje por Refuerzo**
 > Maestria en Inteligencia Artificial ~ Simulacion y Aprendizaje por Refuerzo
-> Profesor: Emilio Muñoz Pérez
-> Luis Alfonso Fajardo Andrade
-> Orly Alberto Alvao Barajas
-> Edwin Aviles Cogollo
+> **Profesor**: Emilio Muñoz Pérez.
+> **Compañeros**: Luis Alfonso Fajardo Andrade, Orly Alberto Alvao Barajas, Edwin Aviles Cogollo
 
 Implementacion y comparacion de dos enfoques de RL ~ "Reinforcement Learning ~
 Aprendizaje por Refuerzo" sobre el entorno clasico **MountainCar-v0**:
