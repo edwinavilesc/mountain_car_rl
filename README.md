@@ -13,20 +13,23 @@
 > Orly Alberto Alvao Barajas
 > Edwin Aviles Cogollo
 
-
 Implementacion y comparacion de dos enfoques de RL ~ "Reinforcement Learning ~
 Aprendizaje por Refuerzo" sobre el entorno clasico **MountainCar-v0**:
 
-| Agente | Tipo | Recompensa obtenida | Episodios de entrenamiento |
-|---|---|:---:|:---:|
-| **Q-Learning** | Tabular (metodo clasico) | -156.80 | 20,000 |
-| **DQN** | Deep Reinforcement Learning | -117.90 | 2,500 |
+
+| Agente         | Tipo                        | Recompensa obtenida | Episodios de entrenamiento |
+| -------------- | --------------------------- | ------------------- | -------------------------- |
+| **Q-Learning** | Tabular (metodo clasico)    | -156.80             | 20,000                     |
+| **DQN**        | Deep Reinforcement Learning | -117.90             | 2,500                      |
+
 
 Ambos agentes resuelven el problema de forma consistente ~ **10/10 episodios**
 alcanzan la bandera en evaluacion. DQN obtiene mayor recompensa usando solo
 el 12.5% de los episodios de entrenamiento de Q-Learning.
 
 ---
+
+
 
 ## El problema ~ MountainCar-v0
 
@@ -58,6 +61,8 @@ lo que hace este entorno especialmente dificil para algoritmos clasicos.
 
 ---
 
+
+
 ## Instalacion
 
 Requiere [uv](https://docs.astral.sh/uv/) (gestor de paquetes Python moderno).
@@ -73,14 +78,18 @@ uv sync
 
 **Dependencias principales:**
 
-| Paquete | Version | Proposito |
-|---|---|---|
-| `gymnasium[classic-control]` | >=1.2.3 | Entorno MountainCar-v0 |
-| `torch` | >=2.10.0 | Red neuronal del agente DQN |
-| `numpy` | >=2.4.2 | Operaciones numericas vectorizadas |
-| `matplotlib` | >=3.9.0 | Graficas de curvas de aprendizaje |
+
+| Paquete                      | Version  | Proposito                          |
+| ---------------------------- | -------- | ---------------------------------- |
+| `gymnasium[classic-control]` | >=1.2.3  | Entorno MountainCar-v0             |
+| `torch`                      | >=2.10.0 | Red neuronal del agente DQN        |
+| `numpy`                      | >=2.4.2  | Operaciones numericas vectorizadas |
+| `matplotlib`                 | >=3.9.0  | Graficas de curvas de aprendizaje  |
+
 
 ---
+
+
 
 ## Uso ~ Comandos disponibles
 
@@ -90,24 +99,30 @@ Todos los comandos se acceden a traves de la CLI ~ "Command Line Interface":
 uv run mountaincar <comando> [opciones]
 ```
 
+
+
 ### Referencia rapida de comandos
 
-| Comando | Descripcion | Ejemplo |
-|---|---|---|
-| `inspect` | Ver el entorno y transiciones de ejemplo | `uv run mountaincar inspect` |
-| `train <agent>` | Entrenar un agente | `uv run mountaincar train qlearning --episodes 20000` |
-| `load <agent>` | Ver info del agente guardado | `uv run mountaincar load qlearning` |
-| `load <agent> --eval` | Evaluar en 10 episodios | `uv run mountaincar load dqn --eval` |
-| `plot <agent>` | Generar curvas de aprendizaje (.png) | `uv run mountaincar plot qlearning` |
-| `sim <agent>` | Simular episodios en texto | `uv run mountaincar sim qlearning` |
-| `render <agent>` | Ver el coche en accion (ventana) | `uv run mountaincar render dqn` |
-| `delete <agent>` | Borrar agente guardado | `uv run mountaincar delete qlearning` |
-| `list` | Listar agentes y su estado | `uv run mountaincar list` |
-| `version` | Ver version del paquete | `uv run mountaincar version` |
+
+| Comando               | Descripcion                              | Ejemplo                                               |
+| --------------------- | ---------------------------------------- | ----------------------------------------------------- |
+| `inspect`             | Ver el entorno y transiciones de ejemplo | `uv run mountaincar inspect`                          |
+| `train <agent>`       | Entrenar un agente                       | `uv run mountaincar train qlearning --episodes 20000` |
+| `load <agent>`        | Ver info del agente guardado             | `uv run mountaincar load qlearning`                   |
+| `load <agent> --eval` | Evaluar en 10 episodios                  | `uv run mountaincar load dqn --eval`                  |
+| `plot <agent>`        | Generar curvas de aprendizaje (.png)     | `uv run mountaincar plot qlearning`                   |
+| `sim <agent>`         | Simular episodios en texto               | `uv run mountaincar sim qlearning`                    |
+| `render <agent>`      | Ver el coche en accion (ventana)         | `uv run mountaincar render dqn`                       |
+| `delete <agent>`      | Borrar agente guardado                   | `uv run mountaincar delete qlearning`                 |
+| `list`                | Listar agentes y su estado               | `uv run mountaincar list`                             |
+| `version`             | Ver version del paquete                  | `uv run mountaincar version`                          |
+
 
 `<agent>` es `qlearning` o `dqn`.
 
 ---
+
+
 
 ## Sesion completa de ejemplo
 
@@ -139,7 +154,11 @@ uv run mountaincar render dqn --episodes 3
 
 ---
 
+
+
 ## Agente 1 ~ Q-Learning Tabular
+
+
 
 ### Como funciona
 
@@ -159,15 +178,18 @@ Q(s, a) <- Q(s, a) + alfa * [ r + gamma * max Q(s', a')  -  Q(s, a) ]
 ```
 
 **Politica Epsilon-Greedy:**
+
 ```
 Con probabilidad epsilon   -> Explorar (accion aleatoria)
 Con probabilidad 1-epsilon -> Explotar (argmax Q-Table)
 ```
 
+
+
 ### Diagrama del ciclo de entrenamiento
 
 Ver diagrama completo en:
-[`docs/02_diagramas/DIAGRAMA_QLEARNING.md`](docs/02_diagramas/DIAGRAMA_QLEARNING.md)
+`[docs/02_diagramas/DIAGRAMA_QLEARNING.md](docs/02_diagramas/DIAGRAMA_QLEARNING.md)`
 
 ```
 Obs. continua                 Q-Table                  Entorno
@@ -179,6 +201,8 @@ Obs. continua                 Q-Table                  Entorno
                   (7, 15)    <-  discretize(s')
                 Q[(7,14)][2] += 0.1 * (target - current_q)
 ```
+
+
 
 ### Hiperparametros ~ Q-Learning
 
@@ -192,6 +216,8 @@ epsilon_dcy  = 0.9995    # Decaimiento multiplicativo por episodio
 episodios    = 20,000
 ```
 
+
+
 ### Resultado obtenido
 
 ```
@@ -201,7 +227,11 @@ Estados visitados: 294 / 400 (73.5% de la cuadricula)
 
 ---
 
+
+
 ## Agente 2 ~ DQN ~ Deep Q-Network
+
+
 
 ### Como funciona
 
@@ -222,19 +252,13 @@ Sin activacion final porque los Q-values son reales negativos sin restriccion.
 **Tres innovaciones sobre Q-Learning basico:**
 
 1. **ReplayBuffer** ~ almacena hasta 100,000 transiciones y muestrea
-   mini-batches ~ "lotes" aleatorios de 64 para romper correlacion temporal
-
+  mini-batches ~ "lotes" aleatorios de 64 para romper correlacion temporal
 2. **Target Network** ~ red congelada que provee targets de Bellman estables.
-   Sin ella, el "blanco" cambia en cada paso -> entrenamiento inestable
-
+  Sin ella, el "blanco" cambia en cada paso -> entrenamiento inestable
 3. **Sticky Exploration** ~ Ejercicio 3 ~ correccion critica:
-   con `p_sticky=0.9`, el 90% de las veces repetimos la accion anterior durante
+  con `p_sticky=0.9`, el 90% de las veces repetimos la accion anterior durante
    la exploracion, produciendo carreras sostenidas de empujes que permiten
    al coche construir momentum. Sin esto, DQN nunca aprende:
-   ```
-   P(20 empujes sostenidos, exploracion uniforme) = (1/3)^20 ~= 0
-   P(20 empujes sostenidos, p_sticky=0.9)         = 0.9^19  ~= 13.5%
-   ```
 
 **Ecuacion de Bellman ~ Bellman target:**
 
@@ -245,10 +269,12 @@ target_q  = r + gamma * next_q * (1 - done)     # shape (B, 1)
 loss      = MSE(current_q, target_q)
 ```
 
+
+
 ### Diagrama del ciclo de entrenamiento
 
 Ver diagrama completo en:
-[`docs/02_diagramas/DIAGRAMA_DQN.md`](docs/02_diagramas/DIAGRAMA_DQN.md)
+`[docs/02_diagramas/DIAGRAMA_DQN.md](docs/02_diagramas/DIAGRAMA_DQN.md)`
 
 ```
 obs continua --> select_action (sticky eps-greedy) --> env.step(a)
@@ -266,6 +292,8 @@ obs continua --> select_action (sticky eps-greedy) --> env.step(a)
                Cada 10 eps: target_net <- q_net
 ```
 
+
+
 ### Hiperparametros ~ DQN
 
 ```
@@ -282,6 +310,8 @@ p_sticky           = 0.9      # Probabilidad sticky action (Ejercicio 3)
 episodios          = 2,500
 ```
 
+
+
 ### Resultado obtenido
 
 ```
@@ -292,13 +322,21 @@ Dispositivo: CPU (red demasiado pequena para aprovechar GPU)
 
 ---
 
+
+
 ## Resultados y Comparacion
+
+
 
 ### Curvas de aprendizaje
 
-| Q-Learning (20,000 episodios) | DQN (2,500 episodios) |
-|---|---|
+
+| Q-Learning (20,000 episodios)                                        | DQN (2,500 episodios)                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------- |
 | ![Q-Learning](docs/03_resultados/plots/qlearning_learning_curve.png) | ![DQN](docs/03_resultados/plots/dqn_learning_curve.png) |
+
+
+
 
 ### Comparativa directa
 
@@ -306,30 +344,38 @@ Dispositivo: CPU (red demasiado pequena para aprovechar GPU)
 
 ### Tabla de resultados
 
-| Metrica | Q-Learning | DQN | Ventaja |
-|---|:---:|:---:|:---:|
-| Recompensa promedio (eval) | -156.80 | **-117.90** | DQN (+38.9 pts) |
-| Desviacion estandar | **+/-24.67** | +/-28.90 | Q-Learning |
-| Banderas alcanzadas | 10/10 | 10/10 | Empate |
-| Episodios de entrenamiento | 20,000 | **2,500** | DQN (8x menos) |
-| Umbral "resuelto" (-110) | No (-156) | Cerca (-118) | DQN |
-| Generalizacion entre estados | No | Si | DQN |
-| Complejidad de implementacion | Baja | Alta | Q-Learning |
+
+| Metrica                       | Q-Learning   | DQN          | Ventaja         |
+| ----------------------------- | ------------ | ------------ | --------------- |
+| Recompensa promedio (eval)    | -156.80      | **-117.90**  | DQN (+38.9 pts) |
+| Desviacion estandar           | **+/-24.67** | +/-28.90     | Q-Learning      |
+| Banderas alcanzadas           | 10/10        | 10/10        | Empate          |
+| Episodios de entrenamiento    | 20,000       | **2,500**    | DQN (8x menos)  |
+| Umbral "resuelto" (-110)      | No (-156)    | Cerca (-118) | DQN             |
+| Generalizacion entre estados  | No           | Si           | DQN             |
+| Complejidad de implementacion | Baja         | Alta         | Q-Learning      |
+
+
+
 
 ### Comparacion cualitativa
 
-| Aspecto | Q-Learning | DQN |
-|---|---|---|
-| **Estabilidad entrenamiento** | Alta ~ curva monotonica | Media ~ ruidosa pero consistente |
-| **Velocidad de aprendizaje** | Lenta ~ necesita explorar cada estado | Rapida ~ generaliza entre estados |
-| **Desempeno final** | Funcional ~ 10/10 pero menos eficiente | Superior ~ 10/10 mas eficiente |
-| **Requiere GPU** | No | No (red tiny, bottleneck es el entorno) |
-| **Escalabilidad** | Limitada ~ maldicion de la dimensionalidad | Alta ~ funciona con imagenes, sensores |
+
+| Aspecto                       | Q-Learning                                 | DQN                                     |
+| ----------------------------- | ------------------------------------------ | --------------------------------------- |
+| **Estabilidad entrenamiento** | Alta ~ curva monotonica                    | Media ~ ruidosa pero consistente        |
+| **Velocidad de aprendizaje**  | Lenta ~ necesita explorar cada estado      | Rapida ~ generaliza entre estados       |
+| **Desempeno final**           | Funcional ~ 10/10 pero menos eficiente     | Superior ~ 10/10 mas eficiente          |
+| **Requiere GPU**              | No                                         | No (red tiny, bottleneck es el entorno) |
+| **Escalabilidad**             | Limitada ~ maldicion de la dimensionalidad | Alta ~ funciona con imagenes, sensores  |
+
 
 Ver analisis detallado en:
-[`docs/03_resultados/RESULTADOS.md`](docs/03_resultados/RESULTADOS.md)
+`[docs/03_resultados/RESULTADOS.md](docs/03_resultados/RESULTADOS.md)`
 
 ---
+
+
 
 ## Estructura del repositorio
 
@@ -361,6 +407,8 @@ mountain_car_rl/
 
 ---
 
+
+
 ## Conceptos clave
 
 Para una explicacion completa de todos los conceptos desde cero, incluyendo
@@ -370,6 +418,7 @@ ver:
 **[docs/01_conceptos/CONCEPTOS.md](docs/01_conceptos/CONCEPTOS.md)**
 
 Temas cubiertos:
+
 - Que es RL ~ Reinforcement Learning ~ Aprendizaje por Refuerzo
 - El entorno MountainCar-v0 y por que es dificil
 - Q-Learning ~ como funciona la Q-Table y la ecuacion TD
@@ -380,6 +429,8 @@ Temas cubiertos:
 - Flujo completo de la CLI y el sistema de guardado
 
 ---
+
+
 
 ## Reflexiones finales
 
@@ -410,26 +461,24 @@ complejidad de implementacion ~ pero en problemas reales ese costo vale la pena.
 
 ---
 
+
+
 ## Referencias
 
 - Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction*
-  (2nd ed., Caps. 4-6). MIT Press.
-  [Link](http://incompleteideas.net/book/the-book-2nd.html)
-
+(2nd ed., Caps. 4-6). MIT Press.
+[Link](http://incompleteideas.net/book/the-book-2nd.html)
 - Lapan, M. (2020). *Deep Reinforcement Learning Hands-On* (2nd ed., Cap. 6 ~ DQN).
-  Packt Publishing.
-
+Packt Publishing.
 - Mnih, V. et al. (2015). Human-level control through deep reinforcement learning.
-  *Nature*, 518, 529-533.
-  [Link](https://www.nature.com/articles/nature14236)
-
+*Nature*, 518, 529-533.
+[Link](https://www.nature.com/articles/nature14236)
 - Gymnasium Documentation ~ MountainCar-v0.
-  [Link](https://gymnasium.farama.org/environments/classic_control/mountain_car/)
-
+[Link](https://gymnasium.farama.org/environments/classic_control/mountain_car/)
 - PyTorch Documentation ~ nn.Module, optim.Adam, MSELoss.
-  [Link](https://pytorch.org/docs/stable/index.html)
+[Link](https://pytorch.org/docs/stable/index.html)
 
 ---
 
 *Repositorio desarrollado como entregable del Taller 1 ~ Aprendizaje por Refuerzo.*
-*Maestria en Inteligencia Artificial ~ 2026.*
+*Maestria en Inteligencia Artificial ~ MIA ~ USabana ~ 2026.*

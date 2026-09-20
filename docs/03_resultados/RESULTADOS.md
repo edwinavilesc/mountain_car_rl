@@ -2,7 +2,7 @@
 
 > Este documento registra los mejores resultados obtenidos por cada agente
 > tras el entrenamiento completo sobre MountainCar-v0, con análisis,
-> métricas y conclusiones en primera persona plural.
+> métricas y conclusiones.
 
 ---
 
