@@ -15,7 +15,7 @@ Corrección del Ejercicio 3 ~ Sticky Action Exploration:
   produce las carreras sostenidas que MountainCar necesita para subir la colina.
   P(20 empujes sostenidos con exploración uniforme) = (1/3)^20 ≈ 3 × 10^-10.
   Implementé exploración con correlación temporal ~ "temporal correlation" mediante
-  sticky action ~ "acción pegajosa": con probabilidad p_sticky repito la acción
+  sticky action ~ "acción pegajosa": con probabilidad p_sticky repetimos la acción
   anterior, permitiendo que P(20 empujes sostenidos) ≈ 0.9^19 ≈ 13.5%.
 """
 
@@ -209,7 +209,7 @@ class DQNAgent:
 
         Solución ~ sticky action ~ "acción pegajosa":
           ~ Con prob ε       : EXPLORACIÓN
-              ~ Con prob p_sticky: repito self._last_action (correlación temporal)
+              ~ Con prob p_sticky: repetimos self._last_action (correlación temporal)
               ~ Con prob 1-p_sticky: nueva acción aleatoria
           ~ Con prob (1-ε)   : EXPLOTACIÓN ~ argmax(q_net(state))
 

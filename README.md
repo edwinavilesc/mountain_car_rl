@@ -8,7 +8,11 @@
 
 > **Taller 1 ~ Aprendizaje por Refuerzo**
 > Maestria en Inteligencia Artificial ~ Simulacion y Aprendizaje por Refuerzo
-> Edwin Aviles
+> Profesor: Emilio Muñoz Pérez
+> Luis Alfonso Fajardo Andrade
+> Orly Alberto Alvao Barajas
+> Edwin Aviles Cogollo
+
 
 Implementacion y comparacion de dos enfoques de RL ~ "Reinforcement Learning ~
 Aprendizaje por Refuerzo" sobre el entorno clasico **MountainCar-v0**:
@@ -142,7 +146,7 @@ uv run mountaincar render dqn --episodes 3
 Q-Learning tabular aprende una funcion Q(s, a) ~ "calidad de tomar accion `a`
 en estado `s`" almacenada como una tabla indexada por estados discretos.
 
-Como MountainCar tiene un espacio de observacion continuo, **discretizo** el
+Como MountainCar tiene un espacio de observacion continuo, **discretizamos** el
 espacio de estados en una cuadricula de 20x20 = 400 casillas usando
 `np.digitize()`. Cada casilla es una clave en un diccionario (la Q-Table).
 
@@ -224,7 +228,7 @@ Sin activacion final porque los Q-values son reales negativos sin restriccion.
    Sin ella, el "blanco" cambia en cada paso -> entrenamiento inestable
 
 3. **Sticky Exploration** ~ Ejercicio 3 ~ correccion critica:
-   con `p_sticky=0.9`, el 90% de las veces repito la accion anterior durante
+   con `p_sticky=0.9`, el 90% de las veces repetimos la accion anterior durante
    la exploracion, produciendo carreras sostenidas de empujes que permiten
    al coche construir momentum. Sin esto, DQN nunca aprende:
    ```
@@ -379,22 +383,22 @@ Temas cubiertos:
 
 ## Reflexiones finales
 
-Implementar estos dos agentes desde cero me dejo aprendizajes que no aparecen
+Implementar estos dos agentes desde cero nos dejo aprendizajes que no aparecen
 directamente en los libros de texto.
 
 El mas importante: **el bug de exploracion del Ejercicio 3**. Cuando DQN reporto
-un score plano de -200 para siempre, mi primer instinto fue revisar el codigo
+un score plano de -200 para siempre, nuestro primer instinto fue revisar el codigo
 de aprendizaje. Pero el aprendizaje estaba correcto ~ el problema era la
-exploracion. El calculo `(1/3)^20 ~= 3 en 10 mil millones` me hizo entender
+exploracion. El calculo `(1/3)^20 ~= 3 en 10 mil millones` nos hizo entender
 que algunos entornos requieren explorar con estructura, no solo con ruido.
-La solucion (sticky action con `p_sticky=0.9`) fue sencilla una vez entendi
-el diagnostico, pero llegar al diagnostico requirio pensar como un experimentador,
-no como un programador.
+La solucion (sticky action con `p_sticky=0.9`) fue sencilla una vez entendimos
+el diagnostico, pero llegar al diagnostico requirio pensar como experimentadores,
+no como programadores.
 
 El segundo aprendizaje fue la distincion `terminated` vs `truncated`. Es un
 detalle que parece trivial pero que rompe el entrenamiento silenciosamente si
 se ignora. En MountainCar, el 99% de los episodios tempranos terminan por
-timeout ~ si los marco como terminados, el agente aprende que "despues del
+timeout ~ si los marcamos como terminados, el agente aprende que "despues del
 paso 200 no existe el futuro", lo cual es falso y corrompe los targets de
 Bellman para casi todas las transiciones.
 

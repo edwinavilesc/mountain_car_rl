@@ -4,7 +4,7 @@ Q-Learning ~ "algoritmo de aprendizaje por refuerzo sin modelo que aprende
 una Q-Table ~ tabla de calidad de acciones por estado"
 
 MountainCar tiene una observación continua 2-D (posición, velocidad) con
-límites publicados por el propio entorno, por lo que puedo discretizar todo
+límites publicados por el propio entorno, por lo que podemos discretizar todo
 el espacio de estados en una cuadrícula n_bins x n_bins ~ sin necesidad de
 ajustar límites manualmente ni casos especiales.
 
@@ -213,7 +213,7 @@ class QLearningAgent:
                 # ── Discretizo el siguiente estado y actualizo la Q-Table
                 next_state = self.discretize(next_obs)
                 # Paso `terminated`, NO `done` ~ el timeout no es un estado terminal real
-                # Ver CONCEPTOS.md §8 para la explicación completa de esta distinción
+                # En el archivo CONCEPTOS.md #8 podemos comprender la explicación completa de esta distinción
                 self._update(state, action, float(reward), next_state, terminated)
 
                 # ── Avanzo al siguiente estado

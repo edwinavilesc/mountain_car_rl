@@ -2,7 +2,7 @@
 
 > Este documento registra los mejores resultados obtenidos por cada agente
 > tras el entrenamiento completo sobre MountainCar-v0, con análisis,
-> métricas y conclusiones en primera persona.
+> métricas y conclusiones en primera persona plural.
 
 ---
 
@@ -46,7 +46,7 @@ Evaluando (10 episodios) ...
 
 **Recompensa final: -156.80 (±24.67)**
 
-Llegué a resolver el problema (10/10 episodios alcanzan la bandera) pero con
+Llegamos a resolver el problema (10/10 episodios alcanzan la bandera) pero con
 un promedio de aproximadamente **157 pasos por episodio**, lo que indica que
 el agente encuentra la bandera de forma consistente aunque no siempre por el
 camino más corto.
@@ -55,14 +55,14 @@ La desviación estándar de ±24.67 refleja la variabilidad natural de la polít
 aprendida ~ el agente a veces llega en 120 pasos y otras en 190, dependiendo
 de la posición inicial del episodio.
 
-El hecho de que visité 294 de 400 estados posibles (73.5%) indica que la
+El hecho de que visitamos 294 de 400 estados posibles (73.5%) indica que la
 discretización capturó bien la distribución de visitas, dejando sin explorar
 principalmente los estados extremos que raramente se alcanzan durante el
 entrenamiento normal.
 
 **¿Por qué -156.80 y no -133 como indica el README del proyecto?**
 El valor -133 es el resultado con hiperparámetros perfectamente ajustados y
-posiblemente más episodios de warm-up ~ "calentamiento". Mi implementación
+posiblemente más episodios de warm-up ~ "calentamiento". Nuestra implementación
 obtiene -156.80, que si bien es menos óptima, resuelve el problema con
 robustez (10/10), que es el criterio de evaluación más importante.
 
@@ -133,7 +133,7 @@ de lo que se considera la solución estándar.
 **¿Por qué -117.90 y no -106 como indica el README?**
 El valor -106 se obtiene con más episodios de entrenamiento y posiblemente con
 ajuste fino de p_sticky y epsilon_decay. Con 2500 episodios y los hiperparámetros
-base obtuve -117.90, que igualmente supera al Q-Learning por ~39 puntos de
+base obtuvimos -117.90, que igualmente supera al Q-Learning por ~39 puntos de
 recompensa con solo el 12.5% de los episodios de entrenamiento.
 
 ---
@@ -190,7 +190,7 @@ promedio. Ambos llegan a la bandera 10/10, pero DQN lo hace más eficientemente.
 #### d. Ventajas
 
 **Q-Learning:**
-- Completamente interpretable ~ puedo ver cada valor en la Q-Table
+- Completamente interpretable ~ podemos ver cada valor en la Q-Table
 - Sin hiperparámetros de red (arquitectura, optimizer, etc.)
 - Sin riesgo de bugs de shapes o gradientes
 - Convergencia garantizada bajo condiciones teóricas estándar
@@ -231,7 +231,7 @@ profundamente por qué la exploración uniforme no funciona en este entorno.
 
 ## 4. Conclusiones
 
-Estos resultados me dejan tres aprendizajes claros que creo que son el corazón
+Estos resultados nos dejan tres aprendizajes claros que creemos que son el corazón
 de este taller:
 
 **Primero**, confirmo empíricamente que DQN supera a Q-Learning tabular en
@@ -243,18 +243,18 @@ hace que el agente nunca aprenda nada.
 
 **Segundo**, el Ejercicio 3 fue la parte más valiosa del taller. Entender por
 qué la exploración uniforme falla en MountainCar ~ que `(1/3)^20 ≈ 0` hace
-imposible construir el momentum necesario ~ me enseñó algo que ningún libro
+imposible construir el momentum necesario ~ nos enseñó algo que ningún libro
 explica directamente: el diseño de la exploración NO es un detalle de
 implementación, es parte central del algoritmo cuando el entorno tiene
 estructuras de acción correlacionadas.
 
 **Tercero**, la distinción entre `terminated` y `truncated` (Ejercicio 2b)
-me pareció inicialmente trivial pero resultó ser fundamental. Usar `done`
+nos pareció inicialmente trivial pero resultó ser fundamental. Usar `done`
 en vez de `terminated` en el replay buffer hubiera roto el entrenamiento
 silenciosamente ~ sin errores, pero sin aprendizaje ~ exactamente el tipo de
 bug que más cuesta encontrar en producción.
 
 En resumen: Q-Learning es la herramienta correcta cuando el espacio de estados
-es pequeño y necesito entender cada decisión del agente. DQN es la herramienta
-correcta cuando necesito escalar o generalizar. Elegir bien entre ellos ya
+es pequeño y necesitamos entender cada decisión del agente. DQN es la herramienta
+correcta cuando necesitamos escalar o generalizar. Elegir bien entre ellos ya
 es, en sí mismo, una decisión de ingeniería importante.

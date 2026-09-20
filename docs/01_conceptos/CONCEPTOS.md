@@ -1,9 +1,9 @@
 # Guía Conceptual ~ Aprendizaje por Refuerzo con MountainCar
 
-> **Nota personal:** Este documento es mi guía de estudio para entender el proyecto
-> MountainCar-v0 a fondo. Lo escribí explicándome cada concepto desde lo más básico
+> **Nota:** Este documento es nuestra guía de estudio para entender el proyecto
+> MountainCar-v0 a fondo. Lo escribimos explicándonos cada concepto desde lo más básico
 > hasta el análisis línea a línea del código, porque entender el código es tan
-> importante como entender la teoría. Si entiendo esto, entiendo RL ~ "Reinforcement
+> importante como entender la teoría. Si entendemos esto, entendemos RL ~ "Reinforcement
 > Learning ~ Aprendizaje por Refuerzo" de verdad.
 
 ---
